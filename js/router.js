@@ -3,13 +3,14 @@ import $ from 'jquery';
 
 import ContactCollection from './contact_collection';
 
-import listTemplate from './views/list';
-import listsTemplate from './views/lists';
+import HomeTemplate from './views/home';
+import SpecificListTemplate from './views/list';
 
 let Router = Backbone.Router.extend({
 
 	routes: {
-		'lists' : "showLists",
+		""      : "home",
+		// 'lists' : "showLists",
 		'lists/:id' : 'showSpecificList'
 	},
 
@@ -22,8 +23,8 @@ let Router = Backbone.Router.extend({
 
 		this.$el.on('click', '.list-item', function(event){
 			let $li = $(event.currentTarget);
-			var listId = $li.data('list-id');
-			router.navigate(`lists/${listId}`);
+			let listId = $li.data('list-id');
+			router.navigate(`list/${listId}`);
 			router.showSpecificList(listId);
 		});
 	},
@@ -34,31 +35,31 @@ let Router = Backbone.Router.extend({
 		);
 	},
 
-	showSpecificList: function(listId){
-		let list = this.lists.get(listId);
+	home: function(){
+		this.showSpinner();
+		let router = this;
+		this.lists.fetch().then(function(){
 
-		if(list){
-			this.$el.html( listTemplate(list.toJSON()) );
+			router.$el.html( HomeTemplate(router.lists.toJSON()) );
+		});
+
+	},
+
+	showSpecificList: function(listId){
+		let specificList = this.lists.get(listId);
+
+		if(specificList){
+			this.$el.html( SpecificListTemplate(specificList.toJSON()) );
 		} else {
 			let router = this;
-			list = this.list.add({objectId: listId});
+			specificList = this.lists.add({objectId: listId});
 			this.showSpinner();
-			list.fetch().then(function(){
-				router.$el.html( listTemplate(list.toJSON()) );
+			specificList.fetch().then(function(){
+				router.$el.html( SpecificListTemplate(specificList.toJSON()) );
 			});
 		}
 	},
-	showLists: function(){
-		this.showSpinner();
-
-		var router = this;
-
-		this.lists.fetch().then(function(){
-
-			router.$el.html( listsTemplate(router.lists.toJSON()) );
-		});
-	},
-
+	
 		start: function(){
 			Backbone.history.start();
 		}

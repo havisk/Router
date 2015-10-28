@@ -5,12 +5,11 @@ import moment from 'moment';
 import Router from './router';
 import './ajax_Setup';
 
-import ContactCollection from './contact_collection';
 
-var appElement = $('.app');
 
-var router = new Router(appElement);
+let appElement = $('.app');
+
+let router = new Router(appElement);
 
 router.start();
 
-console.log('Hello, World');

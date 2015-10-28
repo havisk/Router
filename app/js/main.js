@@ -35,6 +35,7 @@ var _contact_model = require('./contact_model');
 var _contact_model2 = _interopRequireDefault(_contact_model);
 
 var ContactCollection = _backbone2['default'].Collection.extend({
+
 	url: 'https://api.parse.com/1/classes/Lists',
 
 	model: _contact_model2['default'],
@@ -95,19 +96,13 @@ var _router2 = _interopRequireDefault(_router);
 
 require('./ajax_Setup');
 
-var _contact_collection = require('./contact_collection');
-
-var _contact_collection2 = _interopRequireDefault(_contact_collection);
-
 var appElement = (0, _jquery2['default'])('.app');
 
 var router = new _router2['default'](appElement);
 
 router.start();
 
-console.log('Hello, World');
-
-},{"./ajax_Setup":1,"./contact_collection":2,"./router":5,"jquery":9,"moment":10,"underscore":11}],5:[function(require,module,exports){
+},{"./ajax_Setup":1,"./router":5,"jquery":9,"moment":10,"underscore":11}],5:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -128,18 +123,19 @@ var _contact_collection = require('./contact_collection');
 
 var _contact_collection2 = _interopRequireDefault(_contact_collection);
 
+var _viewsHome = require('./views/home');
+
+var _viewsHome2 = _interopRequireDefault(_viewsHome);
+
 var _viewsList = require('./views/list');
 
 var _viewsList2 = _interopRequireDefault(_viewsList);
 
-var _viewsLists = require('./views/lists');
-
-var _viewsLists2 = _interopRequireDefault(_viewsLists);
-
 var Router = _backbone2['default'].Router.extend({
 
 	routes: {
-		'lists': "showLists",
+		"": "home",
+		// 'lists' : "showLists",
 		'lists/:id': 'showSpecificList'
 	},
 
@@ -153,7 +149,7 @@ var Router = _backbone2['default'].Router.extend({
 		this.$el.on('click', '.list-item', function (event) {
 			var $li = (0, _jquery2['default'])(event.currentTarget);
 			var listId = $li.data('list-id');
-			router.navigate('lists/' + listId);
+			router.navigate('list/' + listId);
 			router.showSpecificList(listId);
 		});
 	},
@@ -162,33 +158,32 @@ var Router = _backbone2['default'].Router.extend({
 		this.$el.html('<i class="fa fa-spinner fa-spin"></i>');
 	},
 
+	home: function home() {
+		this.showSpinner();
+		var router = this;
+		this.lists.fetch().then(function () {
+
+			router.$el.html((0, _viewsHome2['default'])(router.lists.toJSON()));
+		});
+	},
+
 	showSpecificList: function showSpecificList(listId) {
 		var _this = this;
 
-		var list = this.lists.get(listId);
+		var specificList = this.lists.get(listId);
 
-		if (list) {
-			this.$el.html((0, _viewsList2['default'])(list.toJSON()));
+		if (specificList) {
+			this.$el.html((0, _viewsList2['default'])(specificList.toJSON()));
 		} else {
 			(function () {
 				var router = _this;
-				list = _this.list.add({ objectId: listId });
+				specificList = _this.lists.add({ objectId: listId });
 				_this.showSpinner();
-				list.fetch().then(function () {
-					router.$el.html((0, _viewsList2['default'])(list.toJSON()));
+				specificList.fetch().then(function () {
+					router.$el.html((0, _viewsList2['default'])(specificList.toJSON()));
 				});
 			})();
 		}
-	},
-	showLists: function showLists() {
-		this.showSpinner();
-
-		var router = this;
-
-		this.lists.fetch().then(function () {
-
-			router.$el.html((0, _viewsLists2['default'])(router.lists.toJSON()));
-		});
 	},
 
 	start: function start() {
@@ -200,7 +195,27 @@ var Router = _backbone2['default'].Router.extend({
 exports['default'] = Router;
 module.exports = exports['default'];
 
-},{"./contact_collection":2,"./views/list":6,"./views/lists":7,"backbone":8,"jquery":9}],6:[function(require,module,exports){
+},{"./contact_collection":2,"./views/home":6,"./views/list":7,"backbone":8,"jquery":9}],6:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+	value: true
+});
+function contact(data) {
+
+	return data.map(function (item) {
+		return '\n\t\t<li class="list-item" data-list-id="' + item.objectId + '">' + item.Name + '</li>\n\t\t';
+	}).join('');
+}
+
+function HomeTemplate(data) {
+	return '\n\t<h2>My Peeps</h2>\n\t<li>' + contact(data) + '</li>\n\t';
+}
+
+exports['default'] = HomeTemplate;
+module.exports = exports['default'];
+
+},{}],7:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -213,35 +228,15 @@ var _moment = require('moment');
 
 var _moment2 = _interopRequireDefault(_moment);
 
-function listTemplate(data) {
+function SpecificListTemplate(data) {
 
-	return '\n\t\t<li>' + data.Name + '</li><br>\n\t\t<li>' + data.Email + '</li><br>\n\t\t<li>' + data.Phone + '</li><br>\n\t\t<li>' + data.Location + '</li>\n\n\t\t';
+	return '\n\t\t<li>' + data.Name + ' </li><br>\n\t\t<li>' + data.Email + ' </li><br>\n\t\t<li>' + data.Phone + ' </li><br>\n\t\t<li>' + data.Location + ' </li>\n\t\t<a href=\'\' class="back"><i class="fa fa-long-arrow-left"></i></a>\n\t\t';
 }
 
-exports['default'] = listTemplate;
+exports['default'] = SpecificListTemplate;
 module.exports = exports['default'];
 
-},{"moment":10}],7:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, '__esModule', {
-	value: true
-});
-function process(data) {
-
-	return data.map(function (item) {
-		return '\n\t\t<li class="list-item" list-id="' + item.objectId + '">' + item.Name + '</li>\n\t\t';
-	}).join('');
-}
-
-function listsTemplate(data) {
-	return '\n\t<h2>My Peeps</h2>\n\t<ul>' + process(data) + '</ul>\n\t';
-}
-
-exports['default'] = listsTemplate;
-module.exports = exports['default'];
-
-},{}],8:[function(require,module,exports){
+},{"moment":10}],8:[function(require,module,exports){
 (function (global){
 //     Backbone.js 1.2.3
 

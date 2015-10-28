@@ -1,0 +1,17 @@
+function contact(data){
+
+	return data.map(function(item){
+		return `
+		<li class="list-item" data-list-id="${item.objectId}">${item.Name}</li>
+		`
+	}).join('');
+}
+
+function HomeTemplate(data){
+	return `
+	<h2>My Peeps</h2>
+	<li>${contact(data)}</li>
+	`;
+}
+
+export default HomeTemplate;

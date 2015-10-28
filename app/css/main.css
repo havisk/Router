@@ -2020,5 +2020,7 @@
 
 body {
   background: #e2ebf3; }
+  body .app li {
+    list-style: none; }
 
 /*# sourceMappingURL=main.css.map */
