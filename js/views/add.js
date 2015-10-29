@@ -6,10 +6,10 @@ function addTemplate(data){
 		<h2>New Contact</h2>
 		<form>
         <ul>
-          <li><input type="text" placeholder="name" id="name"></li>
-          <li><input type="text" placeholder="email" id="email"></li>
-          <li><input type="text" placeholder="phone" id="phone"></li>
-          <li><input type="text" placeholder="location" id="location"></li>
+          <li><input type="text" placeholder="Name" id="name"></li>
+          <li><input type="text" placeholder="Email" id="email"></li>
+          <li><input type="text" placeholder="Phone" id="phone"></li>
+          <li><input type="text" placeholder="Location" id="location"></li>
         </ul>
           <button class="return" data-to="" type="submit" id="submit">Submit</button>
       </form>
