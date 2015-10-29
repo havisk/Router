@@ -13,7 +13,7 @@ function addTemplate(data){
         </ul>
           <button class="return" data-to="" type="submit" id="submit">Submit</button>
       </form>
-    `
+    `;
 };
 
 

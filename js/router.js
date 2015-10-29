@@ -48,10 +48,10 @@ let Router = Backbone.Router.extend({
 		$('#submit').click(function(){
 
 			let newAdd = new ContactModel({
-				name: $('#name').val(),
-				email: $('#email').val(),
-				phone: $('#phone').val(),
-				location: $('#location').val()
+				Name: $('#name').val(),
+				Email: $('#email').val(),
+				Phone: Number($('#phone').val()),
+				Location: $('#location').val()
 			});
 			
 			newAdd.save();
@@ -85,7 +85,7 @@ let Router = Backbone.Router.extend({
 			specificList = this.lists.add({objectId: listId});
 			this.showSpinner();
 			specificList.fetch().then(function(){
-				router.$el.html( SpecificListTemplate(specificList.toJSON()) );
+			router.$el.html( SpecificListTemplate(specificList.toJSON()) );
 			});
 		}
 	},
