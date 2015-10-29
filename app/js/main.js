@@ -17,7 +17,7 @@ _jquery2['default'].ajaxSetup({
 	}
 });
 
-},{"jquery":9}],2:[function(require,module,exports){
+},{"jquery":10}],2:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -49,7 +49,7 @@ var ContactCollection = _backbone2['default'].Collection.extend({
 exports['default'] = ContactCollection;
 module.exports = exports['default'];
 
-},{"./contact_model":3,"backbone":8}],3:[function(require,module,exports){
+},{"./contact_model":3,"backbone":9}],3:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -73,7 +73,7 @@ var ContactModel = _backbone2['default'].Model.extend({
 exports['default'] = ContactModel;
 module.exports = exports['default'];
 
-},{"backbone":8}],4:[function(require,module,exports){
+},{"backbone":9}],4:[function(require,module,exports){
 'use strict';
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
@@ -102,7 +102,7 @@ var router = new _router2['default'](appElement);
 
 router.start();
 
-},{"./ajax_Setup":1,"./router":5,"jquery":9,"moment":10,"underscore":11}],5:[function(require,module,exports){
+},{"./ajax_Setup":1,"./router":5,"jquery":10,"moment":11,"underscore":12}],5:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -131,15 +131,25 @@ var _viewsList = require('./views/list');
 
 var _viewsList2 = _interopRequireDefault(_viewsList);
 
+var _viewsAdd = require('./views/add');
+
+var _viewsAdd2 = _interopRequireDefault(_viewsAdd);
+
+var _contact_model = require('./contact_model');
+
+var _contact_model2 = _interopRequireDefault(_contact_model);
+
 var Router = _backbone2['default'].Router.extend({
 
 	routes: {
 		"": "home",
-		// 'lists' : "showLists",
-		'lists/:id': 'showSpecificList'
+		'lists/:id': 'showSpecificList',
+		'new': 'NewContact'
 	},
 
 	initialize: function initialize(appElement) {
+		var _this = this;
+
 		this.$el = appElement;
 
 		this.lists = new _contact_collection2['default']();
@@ -151,6 +161,33 @@ var Router = _backbone2['default'].Router.extend({
 			var listId = $li.data('list-id');
 			router.navigate('list/' + listId);
 			router.showSpecificList(listId);
+		});
+
+		this.$el.on('click', '.add-contact', function (event) {
+			var $hit = (0, _jquery2['default'])(event.currentTarget);
+			var route = $hit.data('to');
+			_this.navigate(route, { trigger: true });
+		});
+
+		this.$el.on('click', '.return', function (event) {
+			var $hit = (0, _jquery2['default'])(event.currentTarget);
+			var route = $hit.data('to');
+			_this.navigate(route, { trigger: true });
+		});
+	},
+	NewContact: function NewContact() {
+		this.$el.html(_viewsAdd2['default']);
+
+		(0, _jquery2['default'])('#submit').click(function () {
+
+			var newAdd = new _contact_model2['default']({
+				name: (0, _jquery2['default'])('#name').val(),
+				email: (0, _jquery2['default'])('#email').val(),
+				phone: (0, _jquery2['default'])('#phone').val(),
+				location: (0, _jquery2['default'])('#location').val()
+			});
+
+			newAdd.save();
 		});
 	},
 
@@ -168,7 +205,7 @@ var Router = _backbone2['default'].Router.extend({
 	},
 
 	showSpecificList: function showSpecificList(listId) {
-		var _this = this;
+		var _this2 = this;
 
 		var specificList = this.lists.get(listId);
 
@@ -176,9 +213,9 @@ var Router = _backbone2['default'].Router.extend({
 			this.$el.html((0, _viewsList2['default'])(specificList.toJSON()));
 		} else {
 			(function () {
-				var router = _this;
-				specificList = _this.lists.add({ objectId: listId });
-				_this.showSpinner();
+				var router = _this2;
+				specificList = _this2.lists.add({ objectId: listId });
+				_this2.showSpinner();
 				specificList.fetch().then(function () {
 					router.$el.html((0, _viewsList2['default'])(specificList.toJSON()));
 				});
@@ -186,6 +223,20 @@ var Router = _backbone2['default'].Router.extend({
 		}
 	},
 
+	// NewContact: function(){
+	// 	this.$el.html(addTemplate);
+
+	// 	$('#submit').click(function(){
+
+	// 		let newAdd = new ContactModel({
+	// 			name: $('#name').val(),
+	// 			email: $('#email').val(),
+	// 			phone: $('#phone').val(),
+	// 			location: $('#location').val()
+	// 		});
+	// 		newAdd.save();
+
+	// 	});
 	start: function start() {
 		_backbone2['default'].history.start();
 	}
@@ -195,7 +246,31 @@ var Router = _backbone2['default'].Router.extend({
 exports['default'] = Router;
 module.exports = exports['default'];
 
-},{"./contact_collection":2,"./views/home":6,"./views/list":7,"backbone":8,"jquery":9}],6:[function(require,module,exports){
+},{"./contact_collection":2,"./contact_model":3,"./views/add":6,"./views/home":7,"./views/list":8,"backbone":9,"jquery":10}],6:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _jquery = require('jquery');
+
+var _jquery2 = _interopRequireDefault(_jquery);
+
+var _contact_model = require('../contact_model');
+
+var _contact_model2 = _interopRequireDefault(_contact_model);
+
+function addTemplate(data) {
+  return '\n\t\t<h2>New Contact</h2>\n\t\t<form>\n        <ul>\n          <li><input type="text" placeholder="name" id="name"></li>\n          <li><input type="text" placeholder="email" id="email"></li>\n          <li><input type="text" placeholder="phone" id="phone"></li>\n          <li><input type="text" placeholder="location" id="location"></li>\n        </ul>\n          <button class="return" data-to="" type="submit" id="submit">Submit</button>\n      </form>\n    ';
+};
+
+exports['default'] = addTemplate;
+module.exports = exports['default'];
+
+},{"../contact_model":3,"jquery":10}],7:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -209,34 +284,28 @@ function contact(data) {
 }
 
 function HomeTemplate(data) {
-	return '\n\t<h2>My Peeps</h2>\n\t<li>' + contact(data) + '</li>\n\t';
+	return '\n\t<h2>My Peeps</h2>\n\t<li>' + contact(data) + '</li>\n\t<br>\n\t<button class="add-contact" data-to="#new">New Contact</button>\n\t';
 }
 
 exports['default'] = HomeTemplate;
 module.exports = exports['default'];
 
-},{}],7:[function(require,module,exports){
-'use strict';
+},{}],8:[function(require,module,exports){
+"use strict";
 
-Object.defineProperty(exports, '__esModule', {
+Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _moment = require('moment');
-
-var _moment2 = _interopRequireDefault(_moment);
-
 function SpecificListTemplate(data) {
 
-	return '\n\t\t<li>' + data.Name + ' </li><br>\n\t\t<li>' + data.Email + ' </li><br>\n\t\t<li>' + data.Phone + ' </li><br>\n\t\t<li>' + data.Location + ' </li>\n\t\t<a href=\'\' class="back"><i class="fa fa-long-arrow-left"></i></a>\n\t\t';
+	return "\n\t\t<li>" + data.Name + "</li><br>\n\t\t<li>" + data.Email + " </li><br>\n\t\t<li>" + data.Phone + " </li><br>\n\t\t<li>" + data.Location + " </li>\n\t\t<a href='' class=\"back\"><i class=\"fa fa-long-arrow-left\"></i></a>\n\t\t";
 }
 
-exports['default'] = SpecificListTemplate;
-module.exports = exports['default'];
+exports["default"] = SpecificListTemplate;
+module.exports = exports["default"];
 
-},{"moment":10}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 (function (global){
 //     Backbone.js 1.2.3
 
@@ -2135,7 +2204,7 @@ module.exports = exports['default'];
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"jquery":9,"underscore":11}],9:[function(require,module,exports){
+},{"jquery":10,"underscore":12}],10:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v2.1.4
  * http://jquery.com/
@@ -11347,7 +11416,7 @@ return jQuery;
 
 }));
 
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 //! moment.js
 //! version : 2.10.6
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors
@@ -14543,7 +14612,7 @@ return jQuery;
     return _moment;
 
 }));
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 //     Underscore.js 1.8.3
 //     http://underscorejs.org
 //     (c) 2009-2015 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
